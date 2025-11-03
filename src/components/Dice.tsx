@@ -48,7 +48,7 @@ export function Dice(props: { active?: boolean }) {
 
   return (
     <button
-      class={cn("group flex gap-1", props.active && "cursor-pointer")}
+      class={cn("group flex h-full gap-1", props.active && "cursor-pointer")}
       onClick={handleClick}
     >
       <Die value={first()} active={props.active} />
@@ -78,7 +78,7 @@ export function Die(props: { value: DiceValue; active?: boolean }) {
   return (
     <div
       class={cn(
-        "grid size-20 grid-cols-3 grid-rows-3 place-items-center gap-1 rounded-md border-2 border-black bg-linear-to-b from-zinc-400 to-zinc-500 p-2 shadow-md",
+        "grid aspect-square h-full grid-cols-3 grid-rows-3 place-items-center gap-1 rounded-md border-2 border-black bg-linear-to-b from-zinc-400 to-zinc-500 p-2 shadow-md",
         props.active &&
           "from-zinc-200 to-zinc-300 transition-transform duration-100 group-hover:scale-95",
       )}
@@ -87,7 +87,7 @@ export function Die(props: { value: DiceValue; active?: boolean }) {
         {(dot) => (
           <div
             class={cn(
-              "size-4 rounded-full bg-black",
+              "size-full rounded-full bg-black",
               dot()
                 ? "bg-linear-to-b from-zinc-700 to-zinc-900"
                 : "bg-transparent",

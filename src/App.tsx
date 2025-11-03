@@ -14,13 +14,22 @@ const FRAME_TIME = 1000 / FPS;
 
 const SCROLL_SPEED = 5;
 
-type Resource = "lumber" | "brick" | "wool" | "grain" | "ore" | "development";
+type CardType =
+  | "lumber"
+  | "brick"
+  | "wool"
+  | "grain"
+  | "ore"
+  | "resource"
+  | "development";
 
 type Color = "red" | "blue" | "green" | "yellow";
 
 export function App() {
-  let parentRef: HTMLDivElement | undefined;
-  let canvasRef: HTMLCanvasElement | undefined;
+  let mobileParentRef: HTMLDivElement | undefined;
+  let desktopParentRef: HTMLDivElement | undefined;
+  let mobileCanvasRef: HTMLCanvasElement | undefined;
+  let desktopCanvasRef: HTMLCanvasElement | undefined;
   let ctx: CanvasRenderingContext2D | null;
 
   let lastTimestamp = 0;
@@ -69,6 +78,7 @@ export function App() {
   }
 
   function draw() {
+    const canvasRef = getCanvasRef();
     if (!canvasRef) return;
     if (!ctx) return;
 
@@ -83,12 +93,34 @@ export function App() {
     ctx.restore();
   }
 
+  function getParentRef() {
+    if (globalThis.innerWidth < 768) {
+      return mobileParentRef;
+    }
+    return desktopParentRef;
+  }
+
+  function getCanvasRef() {
+    if (globalThis.innerWidth < 768) {
+      return mobileCanvasRef;
+    }
+    return desktopCanvasRef;
+  }
+
   function handleResize() {
+    const parentRef = getParentRef();
     if (!parentRef) return;
+
+    const canvasRef = getCanvasRef();
     if (!canvasRef) return;
 
     canvasRef.width = parentRef.clientWidth;
     canvasRef.height = parentRef.clientHeight;
+
+    x = canvasRef.width / 2 - 50;
+    y = canvasRef.height / 2 - 50;
+
+    ctx = canvasRef.getContext("2d");
   }
 
   function handleKeyDown(event: KeyboardEvent) {
@@ -106,12 +138,6 @@ export function App() {
 
     handleResize();
 
-    if (!canvasRef) return;
-
-    x = canvasRef.width / 2 - 50;
-    y = canvasRef.height / 2 - 50;
-
-    ctx = canvasRef.getContext("2d");
     requestAnimationFrame(loop);
   });
 
@@ -122,91 +148,164 @@ export function App() {
   });
 
   return (
-    <div class="flex h-dvh w-dvw gap-1 bg-sky-700 p-2" ref={parentRef}>
-      <div class="flex h-full grow flex-col items-end gap-1">
-        <div class="relative w-full grow">
-          <canvas class="h-full w-full" ref={canvasRef} />
-          <div class="absolute right-0 bottom-0 z-100">
+    <div class="h-dvh w-dvw bg-sky-700">
+      {/* Mobile */}
+      <div class="flex h-full w-full flex-col gap-1 p-2 md:hidden">
+        <div class="flex h-1/15 w-full gap-1">
+          <div class="aspect-square h-full rounded-md border-2 border-black bg-linear-to-b from-zinc-200 to-zinc-300 shadow-md"></div>
+          <Bank />
+          <div class="aspect-square h-full rounded-md border-2 border-black bg-linear-to-b from-zinc-200 to-zinc-300 shadow-md"></div>
+        </div>
+        <div class="h-1/20 w-full rounded-md border-2 border-black bg-linear-to-b from-zinc-200 to-zinc-300 shadow-md"></div>
+        <div class="grid h-1/6 w-full grid-cols-2 grid-rows-2 gap-1">
+          <Player
+            name="John Smith"
+            color="red"
+            score={5}
+            resources={5}
+            developments={1}
+            knights={1}
+            roads={3}
+          />
+          <Player
+            name="Jane Doe"
+            color="blue"
+            score={4}
+            resources={5}
+            developments={1}
+            knights={1}
+            roads={3}
+          />
+          <Player
+            name="Jim Beam"
+            color="green"
+            score={5}
+            resources={5}
+            developments={1}
+            knights={1}
+            roads={3}
+          />
+          <Player
+            name="Jill Johnson"
+            color="yellow"
+            score={6}
+            resources={5}
+            developments={1}
+            knights={1}
+            roads={3}
+          />
+        </div>
+        <div class="w-full grow" ref={mobileParentRef}>
+          <canvas class="h-full w-full rounded-md" ref={mobileCanvasRef} />
+        </div>
+        <div class="flex h-1/12 w-full items-center justify-between gap-1">
+          <Dice active />
+          <div class="flex h-full gap-1">
+            <ActionButton>
+              <Hammer size={40} />
+            </ActionButton>
+            <ActionButton>
+              <FastForward size={40} />
+            </ActionButton>
+          </div>
+        </div>
+        <div class="h-1/10 w-full">
+          <Hand />
+        </div>
+      </div>
+
+      {/* Desktop */}
+      <div class="hidden h-full w-full flex-col gap-1 p-2 md:flex">
+        <div class="flex h-[15%] w-full flex-col gap-1">
+          <div class="h-1/3 w-full">
+            <Bank />
+          </div>
+          <div class="grid h-2/3 w-full grid-cols-3 grid-rows-1 gap-1">
+            <Player
+              name="John Smith"
+              color="red"
+              score={5}
+              resources={5}
+              developments={1}
+              knights={1}
+              roads={3}
+            />
+            <Player
+              name="Jane Doe"
+              color="blue"
+              score={4}
+              resources={5}
+              developments={1}
+              knights={1}
+              roads={3}
+            />
+            <Player
+              name="Jim Beam"
+              color="green"
+              score={5}
+              resources={5}
+              developments={1}
+              knights={1}
+              roads={3}
+            />
+          </div>
+        </div>
+
+        <div class="relative w-full grow" ref={desktopParentRef}>
+          <canvas class="h-full w-full rounded-md" ref={desktopCanvasRef} />
+          <div class="absolute right-0 bottom-0 z-100 h-20">
             <Dice active />
           </div>
         </div>
 
-        <div class="flex h-1/6 w-full items-end justify-end gap-1">
-          <div class="flex h-full grow items-center justify-center gap-1 rounded-md border-2 border-black bg-linear-to-b from-zinc-200 to-zinc-300 shadow-md">
-            <Index each={["lumber", "brick", "wool", "grain", "ore"]}>
-              {(resource) => <ResourceCard resource={resource() as Resource} />}
-            </Index>
-            <div class="mx-2 h-5/6 w-2 rounded-md bg-zinc-400 inset-shadow-sm"></div>
-            <ResourceCard resource="development" />
-          </div>
+        <div class="flex h-1/10 w-full items-end justify-end gap-1">
+          <Hand />
           <Index each={[<Hammer size={64} />, <FastForward size={64} />]}>
             {(icon) => <ActionButton disabled={true}>{icon()}</ActionButton>}
           </Index>
         </div>
       </div>
-      <div class="flex h-full w-1/3 flex-col gap-1">
-        <div class="w-full grow rounded-md border-2 border-black bg-linear-to-b from-zinc-200 to-zinc-300 shadow-md"></div>
-        <BankCard />
-        <Index
-          each={[
-            { name: "Jane Doe", color: "blue", score: 4 },
-            { name: "Jim Beam", color: "green", score: 5 },
-            { name: "Jill Johnson", color: "yellow", score: 6 },
-          ]}
-        >
-          {(player) => (
-            <PlayerCard
-              name={player().name}
-              color={player().color as Color}
-              score={player().score}
-            />
-          )}
-        </Index>
-        <div class="flex h-1/6 w-full flex-col gap-1 rounded-md border-2 border-black bg-linear-to-b from-zinc-200 to-zinc-300 p-2 shadow-md">
-          <p class="w-full text-center text-lg font-bold">John Smith</p>
-          <div class="flex w-full">
-            <div class="flex h-full w-1/3 flex-col place-items-center">
-              <div class="flex flex-col items-center justify-center">
-                <div class="size-14 rounded-full border-2 border-red-600 bg-linear-to-b from-red-100 to-red-300 shadow-md"></div>
-                <p class="w-16 -translate-y-2 rounded-sm border border-black bg-zinc-200 text-center text-sm shadow-md">
-                  5
-                </p>
-              </div>
-            </div>
-            <div class="flex h-full grow place-items-center gap-4">
-              <div class="aspect-5/8 w-10 rounded-sm border-2 border-black bg-linear-to-b from-blue-400 to-blue-500"></div>
-              <div class="aspect-5/8 w-10 rounded-sm border-2 border-black bg-linear-to-b from-purple-400 to-purple-500"></div>
-              <div class="flex flex-col items-center justify-center gap-1">
-                <PersonStanding size={32} />
-                <p>0</p>
-              </div>
-              <div class="flex flex-col items-center justify-center gap-1">
-                <StretchHorizontal size={32} />
-                <p>0</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
 
-function BankCard() {
+function Bank() {
   return (
-    <div class="flex h-1/8 w-full items-center justify-center gap-1 rounded-md border-2 border-black bg-linear-to-b from-zinc-200 to-zinc-300 shadow-md">
-      <Landmark size={48} />
-      <div class="aspect-5/8 w-10 rounded-sm border-2 border-black bg-linear-to-b from-green-700 to-green-800"></div>
-      <div class="aspect-5/8 w-10 rounded-sm border-2 border-black bg-linear-to-b from-orange-600 to-orange-700"></div>
-      <div class="aspect-5/8 w-10 rounded-sm border-2 border-black bg-linear-to-b from-green-500 to-green-600"></div>
-      <div class="aspect-5/8 w-10 rounded-sm border-2 border-black bg-linear-to-b from-yellow-500 to-yellow-600"></div>
-      <div class="aspect-5/8 w-10 rounded-sm border-2 border-black bg-linear-to-b from-zinc-400 to-zinc-500"></div>
-      <div class="aspect-5/8 w-10 rounded-sm border-2 border-black bg-linear-to-b from-purple-400 to-purple-500"></div>
+    <div class="flex h-full w-full items-center justify-center gap-1 rounded-md border-2 border-black bg-linear-to-b from-zinc-200 to-zinc-300 shadow-md">
+      <Landmark class="mr-1 size-7 md:mr-4 md:size-12" />
+      <Card type="lumber" />
+      <Card type="brick" />
+      <Card type="wool" />
+      <Card type="grain" />
+      <Card type="ore" />
+      <Card type="development" />
     </div>
   );
 }
 
-function PlayerCard(props: { name: string; color: Color; score: number }) {
+function Hand() {
+  return (
+    <div class="flex h-full grow items-center justify-center gap-1 rounded-md border-2 border-black bg-linear-to-b from-zinc-200 to-zinc-300 shadow-md">
+      <Card type="lumber" />
+      <Card type="brick" />
+      <Card type="wool" />
+      <Card type="grain" />
+      <Card type="ore" />
+      <div class="mx-1 h-5/6 w-1 rounded-md bg-zinc-400 inset-shadow-sm md:mx-2 md:w-2"></div>
+      <Card type="development" />
+    </div>
+  );
+}
+
+function Player(props: {
+  name: string;
+  color: Color;
+  score: number;
+  resources: number;
+  developments: number;
+  knights: number;
+  roads: number;
+}) {
   const portraitColors: Record<Color, string> = {
     red: "from-red-100 to-red-300 border-red-600",
     blue: "from-blue-100 to-blue-300 border-blue-600",
@@ -219,46 +318,53 @@ function PlayerCard(props: { name: string; color: Color; score: number }) {
   };
 
   return (
-    <div class="flex h-1/8 w-full rounded-md border-2 border-black bg-linear-to-b from-zinc-200 to-zinc-300 shadow-md">
-      <div class="flex w-full">
-        <div class="flex h-full w-1/3 flex-col items-center justify-center gap-1">
-          <p class="w-full text-center text-xs">{props.name}</p>
-          <div class="flex flex-col items-center justify-center">
-            <div
-              class={cn(
-                "size-12 rounded-full border-2 bg-linear-to-b shadow-md",
-                portraitColor(),
-              )}
-            ></div>
-            <p class="w-14 -translate-y-2 rounded-sm border border-black bg-zinc-200 text-center text-sm shadow-md">
-              {props.score}
-            </p>
+    <>
+      {/* Mobile */}
+      <div class="flex h-full w-full rounded-md border-2 border-black bg-linear-to-b from-zinc-200 to-zinc-300 shadow-md md:hidden"></div>
+
+      {/* Desktop */}
+      <div class="hidden h-full w-full rounded-md border-2 border-black bg-linear-to-b from-zinc-200 to-zinc-300 shadow-md md:flex">
+        <div class="flex w-full">
+          <div class="flex h-full w-1/3 flex-col items-center justify-center gap-1">
+            <p class="w-full text-center text-xs">{props.name}</p>
+            <div class="flex flex-col items-center justify-center">
+              <div
+                class={cn(
+                  "size-8 rounded-full border-2 bg-linear-to-b shadow-md md:size-12",
+                  portraitColor(),
+                )}
+              ></div>
+              <p class="w-10 -translate-y-2 rounded-sm border border-black bg-zinc-200 text-center text-xs shadow-md md:w-14 md:text-sm">
+                {props.score}
+              </p>
+            </div>
           </div>
-        </div>
-        <div class="flex h-full grow place-items-center gap-4">
-          <div class="aspect-5/8 w-10 rounded-sm border-2 border-black bg-linear-to-b from-blue-400 to-blue-500"></div>
-          <div class="aspect-5/8 w-10 rounded-sm border-2 border-black bg-linear-to-b from-purple-400 to-purple-500"></div>
-          <div class="flex flex-col items-center justify-center gap-1">
-            <PersonStanding size={32} />
-            <p>0</p>
-          </div>
-          <div class="flex flex-col items-center justify-center gap-1">
-            <StretchHorizontal size={32} />
-            <p>0</p>
+          <div class="flex h-full grow place-items-center gap-4">
+            <Card type="resource" />
+            <Card type="development" />
+            <div class="flex flex-col items-center justify-center gap-1">
+              <PersonStanding size={32} />
+              <p>{props.knights}</p>
+            </div>
+            <div class="flex flex-col items-center justify-center gap-1">
+              <StretchHorizontal size={32} />
+              <p>{props.roads}</p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
-function ResourceCard(props: { resource: Resource }) {
-  const resourceColors: Record<Resource, string> = {
+function Card(props: { type: CardType }) {
+  const colors: Record<CardType, string> = {
     lumber: "from-green-700 to-green-800",
     brick: "from-orange-600 to-orange-700",
     wool: "from-green-500 to-green-600",
     grain: "from-yellow-500 to-yellow-600",
     ore: "from-zinc-400 to-zinc-500",
+    resource: "from-zinc-400 to-zinc-500",
     development: "from-purple-400 to-purple-500",
   };
 
@@ -266,7 +372,7 @@ function ResourceCard(props: { resource: Resource }) {
     <div
       class={cn(
         "aspect-10/16 h-3/4 cursor-pointer rounded-sm border-2 border-black bg-linear-to-b shadow-md transition-transform duration-100 hover:scale-95",
-        resourceColors[props.resource],
+        colors[props.type],
       )}
     ></div>
   );
