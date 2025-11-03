@@ -78,7 +78,7 @@ export function Die(props: { value: DiceValue; active?: boolean }) {
   return (
     <div
       class={cn(
-        "grid aspect-square h-full grid-cols-3 grid-rows-3 place-items-center gap-1 rounded-md border-2 border-black bg-linear-to-b from-zinc-400 to-zinc-500 p-2 shadow-md",
+        "grid aspect-square h-full grid-cols-3 grid-rows-3 place-items-center gap-0.5 rounded-md border-2 border-black bg-linear-to-b from-zinc-400 to-zinc-500 p-2 shadow-md",
         props.active &&
           "from-zinc-200 to-zinc-300 transition-transform duration-100 group-hover:scale-95",
       )}
