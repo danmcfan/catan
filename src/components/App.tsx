@@ -51,8 +51,6 @@ const COLORS = {
   ChitBorder: "oklch(70.5% 0.015 286.067)",
 };
 
-type Color = (typeof COLORS)[keyof typeof COLORS];
-
 export function App() {
   let parentRef: HTMLDivElement | undefined;
   let canvasRef: HTMLCanvasElement | undefined;
@@ -334,42 +332,10 @@ export function App() {
         </div>
         <div class="h-8 w-full rounded-md border-2 border-black bg-linear-to-b from-zinc-200 to-zinc-300 shadow-md md:hidden"></div>
         <div class="grid h-24 w-full grid-cols-2 grid-rows-2 gap-1 md:h-18 md:grid-cols-4 md:grid-rows-1">
-          <Player
-            name="John Smith"
-            color="red"
-            score={5}
-            resources={5}
-            developments={1}
-            knights={1}
-            roads={3}
-          />
-          <Player
-            name="Jane Doe"
-            color="blue"
-            score={4}
-            resources={5}
-            developments={1}
-            knights={1}
-            roads={3}
-          />
-          <Player
-            name="Jim Beam"
-            color="green"
-            score={5}
-            resources={5}
-            developments={1}
-            knights={1}
-            roads={3}
-          />
-          <Player
-            name="Jill Johnson"
-            color="yellow"
-            score={6}
-            resources={5}
-            developments={1}
-            knights={1}
-            roads={3}
-          />
+          <Player />
+          <Player />
+          <Player />
+          <Player />
         </div>
         <div class="relative w-full grow" ref={parentRef}>
           <canvas class="h-full w-full rounded-md" ref={canvasRef} />
@@ -455,26 +421,7 @@ function Hand() {
   );
 }
 
-function Player(props: {
-  name: string;
-  color: Color;
-  score: number;
-  resources: number;
-  developments: number;
-  knights: number;
-  roads: number;
-}) {
-  const portraitColors: Record<Color, string> = {
-    red: "from-red-100 to-red-300 border-red-600",
-    blue: "from-blue-100 to-blue-300 border-blue-600",
-    green: "from-green-100 to-green-300 border-green-600",
-    yellow: "from-yellow-100 to-yellow-300 border-yellow-600",
-  };
-
-  const portraitColor = () => {
-    return portraitColors[props.color];
-  };
-
+function Player() {
   return (
     <div class="flex h-full w-full rounded-md border-2 border-black bg-linear-to-b from-zinc-200 to-zinc-300 shadow-md"></div>
   );
