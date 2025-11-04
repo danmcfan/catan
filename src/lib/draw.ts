@@ -76,3 +76,32 @@ export function text(
   ctx.textBaseline = "middle";
   ctx.fillText(text, x, y);
 }
+
+export function square(
+  ctx: CanvasRenderingContext2D,
+  cx: number,
+  cy: number,
+  r: number,
+  topColor: string,
+  bottomColor: string,
+  borderColor: string = "black",
+  borderWidth: number = 3,
+) {
+  ctx.save();
+
+  ctx.beginPath();
+  ctx.rect(cx - r, cy - r, r * 2, r * 2);
+  ctx.closePath();
+
+  const grad = ctx.createLinearGradient(cx, cy - r, cx, cy + r);
+  grad.addColorStop(0, topColor);
+  grad.addColorStop(1, bottomColor);
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  ctx.strokeStyle = borderColor;
+  ctx.lineWidth = borderWidth;
+  ctx.stroke();
+
+  ctx.restore();
+}

@@ -1,49 +1,17 @@
-import { createSignal, Index } from "solid-js";
+import { Index } from "solid-js";
 import { cn } from "@/lib/utils";
 
-type DiceValue = 1 | 2 | 3 | 4 | 5 | 6;
+export type DiceValue = 1 | 2 | 3 | 4 | 5 | 6;
 
-const ROLL_ITERATIONS = 3;
-const ROLL_INTERVAL = 150;
-
-export function Dice(props: { active?: boolean }) {
-  const [first, setFirst] = createSignal<DiceValue>(1);
-  const [second, setSecond] = createSignal<DiceValue>(1);
-
-  function randomValue() {
-    return (Math.floor(Math.random() * 6) + 1) as DiceValue;
-  }
-
+export function Dice(props: {
+  rollDice: () => void;
+  firstValue: DiceValue;
+  secondValue: DiceValue;
+  active?: boolean;
+}) {
   function handleClick() {
     if (!props.active) return;
-    let firstValues: DiceValue[] = [];
-    let secondValues: DiceValue[] = [];
-
-    for (let i = 0; i < ROLL_ITERATIONS; i++) {
-      let firstValue = randomValue();
-      while (firstValues.includes(firstValue)) {
-        firstValue = randomValue();
-      }
-      firstValues.push(firstValue);
-
-      let secondValue = randomValue();
-      while (secondValues.includes(secondValue)) {
-        secondValue = randomValue();
-      }
-      secondValues.push(secondValue);
-    }
-
-    let index = 0;
-    const interval = setInterval(() => {
-      setFirst(firstValues[index]);
-      setSecond(secondValues[index]);
-      index++;
-      if (index >= ROLL_ITERATIONS) {
-        clearInterval(interval);
-      }
-    }, ROLL_INTERVAL);
-
-    return () => clearInterval(interval);
+    props.rollDice();
   }
 
   return (
@@ -51,8 +19,8 @@ export function Dice(props: { active?: boolean }) {
       class={cn("group flex h-full gap-1", props.active && "cursor-pointer")}
       onClick={handleClick}
     >
-      <Die value={first()} active={props.active} />
-      <Die value={second()} active={props.active} />
+      <Die value={props.firstValue} active={props.active} />
+      <Die value={props.secondValue} active={props.active} />
     </button>
   );
 }
