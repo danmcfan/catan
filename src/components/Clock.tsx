@@ -1,4 +1,5 @@
 import { createSignal, onCleanup, onMount } from "solid-js";
+import { Panel } from "@/components/ui/Panel";
 
 export function Clock() {
   const [seconds, setSeconds] = createSignal(60);
@@ -24,10 +25,10 @@ export function Clock() {
   });
 
   return (
-    <div class="flex h-full w-32 items-center justify-center rounded-md border-2 border-black bg-linear-to-b from-zinc-200 to-zinc-300 shadow-md md:w-48">
+    <Panel class="w-32 md:w-48">
       <p class="text-center font-mono text-lg font-bold md:text-2xl">
         {formattedSeconds()}
       </p>
-    </div>
+    </Panel>
   );
 }

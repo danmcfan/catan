@@ -1,9 +1,10 @@
 import { Card } from "@/components/Card";
+import { Panel } from "@/components/ui/Panel";
 import type { CardType } from "@/lib/types";
 
 export function Hand(props: { hand: Record<CardType, number> }) {
   return (
-    <div class="flex h-full grow items-center justify-center gap-0.5 rounded-md border-2 border-black bg-linear-to-b from-zinc-200 to-zinc-300 shadow-md md:gap-1">
+    <Panel class="flex h-full grow items-center justify-center gap-0.5 md:gap-1">
       {props.hand.lumber > 0 && (
         <Card type="lumber" count={props.hand.lumber} />
       )}
@@ -17,6 +18,6 @@ export function Hand(props: { hand: Record<CardType, number> }) {
           <Card type="development" count={props.hand.development} />
         </>
       )}
-    </div>
+    </Panel>
   );
 }

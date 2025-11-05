@@ -30,7 +30,7 @@ export function Card(props: { type: CardType; count?: number }) {
     >
       <div
         class={cn(
-          "relative z-100 h-full w-full cursor-pointer rounded-sm border border-black bg-linear-to-b shadow-md transition-transform duration-100 hover:scale-95 md:border-2",
+          "relative z-100 h-full w-full rounded-sm border border-black bg-linear-to-b shadow-md md:border-2",
           colors[props.type],
         )}
       >
@@ -44,7 +44,7 @@ export function Card(props: { type: CardType; count?: number }) {
         {(index) => (
           <div
             class={cn(
-              "absolute top-0 left-0 aspect-10/16 h-full w-full cursor-pointer rounded-sm border border-black bg-linear-to-b transition-transform duration-100 hover:scale-95 md:border-2",
+              "absolute top-0 left-0 aspect-10/16 h-full w-full rounded-sm border border-black bg-linear-to-b md:border-2",
               colors[props.type],
             )}
             style={{

@@ -1,13 +1,15 @@
 import { createEffect, onMount, onCleanup, ErrorBoundary } from "solid-js";
 import { Hammer, FastForward, Settings } from "lucide-solid";
 
-import { ActionButton } from "@/components/ActionButton";
 import { Bank } from "@/components/Bank";
 import { Clock } from "@/components/Clock";
 import { Dice } from "@/components/Dice";
 import { ErrorPage } from "@/components/ErrorPage";
 import { Hand } from "@/components/Hand";
 import { Players } from "@/components/Players";
+
+import { Button } from "@/components/ui/Button";
+import { Panel } from "@/components/ui/Panel";
 
 import { useState } from "@/lib/state";
 import {
@@ -139,16 +141,16 @@ export function App() {
       <div class="h-dvh w-dvw bg-sky-700 font-mono">
         <div class="flex h-full w-full flex-col gap-1 p-2">
           <div class="flex h-10 w-full gap-1 md:h-14">
-            <button class="flex aspect-square h-full cursor-pointer items-center justify-center rounded-md border-2 border-black bg-linear-to-b from-zinc-200 to-zinc-300 shadow-md transition-transform duration-100 hover:scale-95">
-              <Settings class="size-6 md:size-10" />
-            </button>
+            <Button class="p-1">
+              <Settings class="size-full" stroke-width={1.5} />
+            </Button>
             <div class="flex h-full w-full gap-1">
               <Bank />
-              <div class="hidden h-full w-1/2 rounded-md border-2 border-black bg-linear-to-b from-zinc-200 to-zinc-300 shadow-md md:block"></div>
+              <Panel class="hidden h-full w-1/2 md:flex"></Panel>
             </div>
             <Clock />
           </div>
-          <div class="h-8 w-full rounded-md border-2 border-black bg-linear-to-b from-zinc-200 to-zinc-300 shadow-md md:hidden"></div>
+          <Panel class="h-8 md:hidden"></Panel>
           <Players
             activePlayerId={state.turn.activePlayerId}
             rollingPlayerId={state.turn.rollingPlayerId}
@@ -164,12 +166,12 @@ export function App() {
               <Hand hand={state.hand} />
             </div>
             <div class="flex h-full gap-1">
-              <ActionButton>
-                <Hammer class="size-10 md:size-16" />
-              </ActionButton>
-              <ActionButton>
-                <FastForward class="size-10 md:size-16" />
-              </ActionButton>
+              <Button class="p-2 md:p-4">
+                <Hammer class="size-full" stroke-width={1.5} />
+              </Button>
+              <Button class="p-2 md:p-4">
+                <FastForward class="size-full" stroke-width={1.5} />
+              </Button>
             </div>
           </div>
         </div>

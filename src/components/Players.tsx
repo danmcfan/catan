@@ -1,4 +1,5 @@
 import { Index } from "solid-js";
+import { Panel } from "@/components/ui/Panel";
 import { cn } from "@/lib/utils";
 import { assert } from "@/lib/assert";
 
@@ -85,19 +86,21 @@ function Player(props: {
   };
 
   return (
-    <div
-      class={cn(
-        "flex h-full w-full items-center justify-start gap-2 rounded-md border-black bg-linear-to-b p-2 shadow-md",
-        activeClass(),
-        rollingClass(),
-      )}
-    >
+    <Panel class={cn(activeClass(), rollingClass(), "gap-2 md:gap-4")}>
       <div
-        class={cn("size-8 rounded-full border bg-linear-to-b", circleClass())}
+        class={cn(
+          "size-8 rounded-full border bg-linear-to-b md:size-12",
+          circleClass(),
+        )}
       ></div>
-      <h1 class={cn("text-xl font-bold md:text-2xl", textClass())}>
+      <h1
+        class={cn(
+          "flex items-center justify-center text-xl font-bold select-none md:text-4xl",
+          textClass(),
+        )}
+      >
         {props.name}
       </h1>
-    </div>
+    </Panel>
   );
 }
