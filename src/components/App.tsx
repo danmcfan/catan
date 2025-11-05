@@ -136,6 +136,24 @@ export function App() {
     }, 2500);
   });
 
+  const enableHammer = () => {
+    if (state.turn.rollingPlayerId !== state.turn.activePlayerId) return false;
+    if (state.hand.wool >= 1 && state.hand.grain >= 1 && state.hand.ore >= 1)
+      return true;
+    return false;
+  };
+
+  const enableNext = () => {
+    return state.turn.rollingPlayerId === state.turn.activePlayerId;
+  };
+
+  function handleHammerClick() {
+    setState("hand", "wool", state.hand.wool - 1);
+    setState("hand", "grain", state.hand.grain - 1);
+    setState("hand", "ore", state.hand.ore - 1);
+    setState("hand", "development", state.hand.development + 1);
+  }
+
   return (
     <ErrorBoundary fallback={(error, _) => <ErrorPage error={error} />}>
       <div class="h-dvh w-dvw bg-sky-700 font-mono">
@@ -166,10 +184,14 @@ export function App() {
               <Hand hand={state.hand} />
             </div>
             <div class="flex h-full gap-1">
-              <Button class="p-2 md:p-4">
+              <Button
+                class="p-2 md:p-4"
+                disabled={!enableHammer()}
+                onClick={handleHammerClick}
+              >
                 <Hammer class="size-full" stroke-width={1.5} />
               </Button>
-              <Button class="p-2 md:p-4">
+              <Button class="p-2 md:p-4" disabled={!enableNext()}>
                 <FastForward class="size-full" stroke-width={1.5} />
               </Button>
             </div>

@@ -5,7 +5,14 @@ export function Button(props: {
   children?: JSX.Element | JSX.Element[];
   class?: string;
   disabled?: boolean;
+  onClick?: () => void;
 }) {
+  function handleClick() {
+    if (props.disabled) return;
+    if (!props.onClick) return;
+    props.onClick();
+  }
+
   return (
     <button
       class={cn(
@@ -15,6 +22,7 @@ export function Button(props: {
           ? "cursor-default bg-zinc-400"
           : "bg-linear-to-b from-zinc-200 to-zinc-300 transition-transform duration-100 hover:scale-95",
       )}
+      onClick={handleClick}
     >
       {props.children}
     </button>
