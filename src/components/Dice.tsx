@@ -1,31 +1,30 @@
 import { Index } from "solid-js";
+import { useState } from "@/lib/state";
 import { cn } from "@/lib/utils";
+import { type Die } from "@/lib/types";
 
-export type DiceValue = 1 | 2 | 3 | 4 | 5 | 6;
+export function Dice(props: { rollDice: () => void }) {
+  const [state, _] = useState();
 
-export function Dice(props: {
-  rollDice: () => void;
-  firstValue: DiceValue;
-  secondValue: DiceValue;
-  active?: boolean;
-}) {
+  const active = () => state.turn.rollingPlayerId === state.turn.activePlayerId;
+
   function handleClick() {
-    if (!props.active) return;
+    if (!active()) return;
     props.rollDice();
   }
 
   return (
     <button
-      class={cn("group flex h-full gap-1", props.active && "cursor-pointer")}
+      class={cn("group flex h-full gap-1", active() && "cursor-pointer")}
       onClick={handleClick}
     >
-      <Die value={props.firstValue} active={props.active} />
-      <Die value={props.secondValue} active={props.active} />
+      <Die value={state.dice.first} active={active()} />
+      <Die value={state.dice.second} active={active()} />
     </button>
   );
 }
 
-export function Die(props: { value: DiceValue; active?: boolean }) {
+export function Die(props: { value: Die; active?: boolean }) {
   const dots = () => {
     switch (props.value) {
       case 1:
