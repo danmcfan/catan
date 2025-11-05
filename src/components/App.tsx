@@ -41,6 +41,28 @@ export function App() {
   let y = 0;
   let scale = 0.75;
 
+  let mouseX = 0;
+  let mouseY = 0;
+
+  onMount(() => {
+    globalThis.addEventListener("resize", handleResize);
+
+    if (canvasRef) {
+      canvasRef.addEventListener("mousemove", handleMouseMove);
+    }
+
+    handleResize();
+
+    requestAnimationFrame(loop);
+  });
+
+  onCleanup(() => {
+    globalThis.removeEventListener("resize", handleResize);
+    if (canvasRef) {
+      canvasRef.removeEventListener("mousemove", handleMouseMove);
+    }
+  });
+
   function loop(timestamp: number) {
     const delta = timestamp - lastTimestamp;
     lastTimestamp = timestamp;
@@ -56,6 +78,8 @@ export function App() {
         x,
         y,
         scale,
+        mouseX,
+        mouseY,
       });
     }
     requestAnimationFrame(loop);
@@ -100,17 +124,10 @@ export function App() {
     ctx.imageSmoothingEnabled = false;
   }
 
-  onMount(() => {
-    globalThis.addEventListener("resize", handleResize);
-
-    handleResize();
-
-    requestAnimationFrame(loop);
-  });
-
-  onCleanup(() => {
-    globalThis.removeEventListener("resize", handleResize);
-  });
+  function handleMouseMove(event: MouseEvent) {
+    mouseX = event.offsetX;
+    mouseY = event.offsetY;
+  }
 
   createEffect(() => {
     if (!state.dice.rolled) return;

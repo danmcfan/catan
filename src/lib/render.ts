@@ -1,17 +1,16 @@
 import { circle, hexagon, text, square } from "@/lib/draw";
+import { canvasToMapPosition, within } from "@/lib/map";
 import { TILE_RADIUS, COLORS } from "@/lib/config";
 import type { State } from "@/lib/state";
+import type { Options } from "@/lib/types";
+
+const START_X = -TILE_RADIUS * 2;
+const START_Y = -TILE_RADIUS * 1.75 * 2;
 
 export function render(
   ctx: CanvasRenderingContext2D,
   state: State,
-  options: {
-    width: number;
-    height: number;
-    x: number;
-    y: number;
-    scale: number;
-  },
+  options: Options,
 ) {
   ctx.clearRect(0, 0, options.width, options.height);
 
@@ -20,12 +19,16 @@ export function render(
   ctx.translate(options.x, options.y);
   ctx.scale(options.scale, options.scale);
 
-  const startX = -TILE_RADIUS * 2;
-  const startY = -TILE_RADIUS * 1.75 * 2;
+  renderTiles(ctx, state);
+  renderBuildings(ctx, state, options);
 
+  ctx.restore();
+}
+
+function renderTiles(ctx: CanvasRenderingContext2D, state: State) {
   let rowIndex = 0;
-  let tileX = startX;
-  let tileY = startY;
+  let tileX = START_X;
+  let tileY = START_Y;
   for (const row of state.board.tiles) {
     for (const tile of row) {
       let colorConfig = { top: "", bottom: "", border: "black" };
@@ -106,27 +109,44 @@ export function render(
     switch (rowIndex) {
       case 1:
       case 3:
-        tileX = startX - TILE_RADIUS;
+        tileX = START_X - TILE_RADIUS;
         break;
       case 2:
-        tileX = startX - TILE_RADIUS * 2;
+        tileX = START_X - TILE_RADIUS * 2;
         break;
       default:
-        tileX = startX;
+        tileX = START_X;
         break;
     }
     tileY += TILE_RADIUS * 1.75;
   }
+}
 
-  const startBuildingX = startX;
-  const startBuildingY = startY - TILE_RADIUS * 1.1;
+function renderBuildings(
+  ctx: CanvasRenderingContext2D,
+  state: State,
+  options: Options,
+) {
+  const mousePosition = canvasToMapPosition(
+    options.mouseX,
+    options.mouseY,
+    options.x,
+    options.y,
+    options.scale,
+  );
 
-  rowIndex = 0;
+  const scaleFactor = 1.12;
+
+  const startBuildingX = START_X;
+  const startBuildingY = START_Y - TILE_RADIUS * scaleFactor;
+
+  let rowIndex = 0;
   let colIndex = 0;
   let buildingX = startBuildingX;
   let buildingY = startBuildingY;
   for (const row of state.board.buildings) {
     for (const building of row) {
+      const hover = within({ x: buildingX, y: buildingY }, mousePosition, 25);
       if (building) {
         let colorConfig = { top: "", bottom: "" };
         switch (building.color) {
@@ -150,7 +170,18 @@ export function render(
           TILE_RADIUS * 0.25,
           colorConfig.top,
           colorConfig.bottom,
+          hover ? "white" : "black",
         );
+      } else {
+        hover &&
+          circle(
+            ctx,
+            buildingX,
+            buildingY,
+            TILE_RADIUS * 0.2,
+            "rgba(0, 0, 0, 0.1)",
+            "rgba(0, 0, 0, 0.1)",
+          );
       }
       buildingX += TILE_RADIUS * 2;
       colIndex++;
@@ -179,12 +210,10 @@ export function render(
         break;
     }
     if (rowIndex % 2 === 0) {
-      buildingY += TILE_RADIUS * 1.25;
+      buildingY += TILE_RADIUS * scaleFactor * 1.08;
     } else {
-      buildingY += TILE_RADIUS * 0.5;
+      buildingY += TILE_RADIUS * scaleFactor * 0.475;
     }
     colIndex = 0;
   }
-
-  ctx.restore();
 }

@@ -55,3 +55,23 @@ export function listTileVertices(tile: Position): Position[] {
     bottomVertex,
   ];
 }
+
+export function canvasToMapPosition(
+  canvasX: number,
+  canvasY: number,
+  translateX: number,
+  translateY: number,
+  scale: number,
+) {
+  const x = (canvasX - translateX) / scale;
+  const y = (canvasY - translateY) / scale;
+  return { x, y };
+}
+
+export function within(
+  a: { x: number; y: number },
+  b: { x: number; y: number },
+  radius: number,
+) {
+  return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2) <= radius;
+}
