@@ -4,6 +4,8 @@ import { TILE_RADIUS, COLORS } from "@/lib/config";
 import type { State } from "@/lib/state";
 import type { Options } from "@/lib/types";
 
+const BUFFER = TILE_RADIUS * 0.25;
+
 const START_X = -TILE_RADIUS * 2;
 const START_Y = -TILE_RADIUS * 1.75 * 2;
 
@@ -58,7 +60,7 @@ function renderTiles(ctx: CanvasRenderingContext2D, state: State) {
         ctx,
         tileX,
         tileY,
-        TILE_RADIUS * 1.25,
+        TILE_RADIUS + BUFFER,
         COLORS.background,
         COLORS.background,
         "rgba(0,0,0,0)",
@@ -95,7 +97,7 @@ function renderTiles(ctx: CanvasRenderingContext2D, state: State) {
           ctx,
           tileX,
           tileY,
-          TILE_RADIUS * 0.35,
+          TILE_RADIUS * 0.4,
           COLORS.chit.top,
           COLORS.chit.bottom,
           color,

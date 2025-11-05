@@ -41,7 +41,7 @@ export function circle(
   topColor: string,
   bottomColor: string,
   borderColor: string = "black",
-  borderWidth: number = 2,
+  borderWidth: number = 4,
 ) {
   ctx.save();
 
@@ -68,7 +68,7 @@ export function text(
   y: number,
   text: string,
   color: string = "black",
-  font: string = "32px monospace",
+  font: string = "bold 40px monospace",
 ) {
   ctx.fillStyle = color;
   ctx.font = font;
