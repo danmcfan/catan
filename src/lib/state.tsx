@@ -15,71 +15,59 @@ export type State = {
   };
   hand: Record<CardType, number>;
   board: {
-    tiles: Tile[][];
-    buildings: (Building | null)[][];
+    tiles: Tile[];
+    buildings: Building[];
   };
 };
 
-const initialTiles: Tile[][] = [
+const initialTiles: Tile[] = [
   // Row 1 (3 tiles)
-  [
-    { type: "ore", value: 10 },
-    { type: "wool", value: 2 },
-    { type: "lumber", value: 9 },
-  ],
+  { q: 0, r: -2, type: "ore", value: 10 },
+  { q: 1, r: -2, type: "wool", value: 2 },
+  { q: 2, r: -2, type: "lumber", value: 9 },
+
   // Row 2 (4 tiles)
-  [
-    { type: "grain", value: 12 },
-    { type: "brick", value: 6 },
-    { type: "wool", value: 4 },
-    { type: "brick", value: 10 },
-  ],
+  { q: -1, r: -1, type: "grain", value: 12 },
+  { q: 0, r: -1, type: "brick", value: 6 },
+  { q: 1, r: -1, type: "wool", value: 4 },
+  { q: 2, r: -1, type: "brick", value: 10 },
+
   // Row 3 (5 tiles)
-  [
-    { type: "grain", value: 9 },
-    { type: "lumber", value: 11 },
-    { type: "desert", value: 0 },
-    { type: "lumber", value: 3 },
-    { type: "ore", value: 8 },
-  ],
+  { q: -2, r: 0, type: "grain", value: 9 },
+  { q: -1, r: 0, type: "lumber", value: 11 },
+  { q: 0, r: 0, type: "desert", value: 0 },
+  { q: 1, r: 0, type: "lumber", value: 3 },
+  { q: 2, r: 0, type: "ore", value: 8 },
+
   // Row 4 (4 tiles)
-  [
-    { type: "lumber", value: 8 },
-    { type: "ore", value: 3 },
-    { type: "grain", value: 4 },
-    { type: "wool", value: 5 },
-  ],
+  { q: -2, r: 1, type: "lumber", value: 8 },
+  { q: -1, r: 1, type: "ore", value: 3 },
+  { q: 0, r: 1, type: "grain", value: 4 },
+  { q: 1, r: 1, type: "wool", value: 5 },
+
   // Row 5 (3 tiles)
-  [
-    { type: "brick", value: 5 },
-    { type: "grain", value: 6 },
-    { type: "wool", value: 11 },
-  ],
+  { q: -2, r: 2, type: "brick", value: 5 },
+  { q: -1, r: 2, type: "grain", value: 6 },
+  { q: 0, r: 2, type: "wool", value: 11 },
 ];
 
-const initialBuildings: (Building | null)[][] = [
-  [null, null, null],
-  [null, null, null, null],
-  [null, null, null, null],
-  [null, null, null, null, null],
-  [null, null, null, null, null],
-  [null, null, null, null, null, null],
-  [null, null, null, null, null, null],
-  [null, null, null, null, null],
-  [null, null, null, null, null],
-  [null, null, null, null],
-  [null, null, null, null],
-  [null, null, null],
-];
+const initialBuildings: Building[] = [
+  // Red settlements
+  { q: -2, r: 1, v: 2, type: "settlement", color: "red" },
+  { q: 0, r: 1, v: 2, type: "settlement", color: "red" },
 
-initialBuildings[8][1] = { type: "settlement", color: "red" };
-initialBuildings[9][2] = { type: "settlement", color: "red" };
-initialBuildings[6][1] = { type: "settlement", color: "blue" };
-initialBuildings[7][2] = { type: "settlement", color: "blue" };
-initialBuildings[4][1] = { type: "settlement", color: "green" };
-initialBuildings[6][4] = { type: "settlement", color: "green" };
-initialBuildings[3][2] = { type: "settlement", color: "yellow" };
-initialBuildings[4][3] = { type: "settlement", color: "yellow" };
+  // Blue settlements
+  { q: 0, r: -2, v: 2, type: "settlement", color: "blue" },
+  { q: -1, r: -1, v: 3, type: "settlement", color: "blue" },
+
+  // Green settlements
+  { q: -1, r: 1, v: 2, type: "settlement", color: "green" },
+  { q: 2, r: -2, v: 3, type: "settlement", color: "green" },
+
+  // Yellow settlements
+  { q: 2, r: -1, v: 3, type: "settlement", color: "yellow" },
+  { q: 0, r: 0, v: 2, type: "settlement", color: "yellow" },
+];
 
 const initialState: State = {
   dice: {

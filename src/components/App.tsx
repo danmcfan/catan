@@ -39,7 +39,7 @@ export function App() {
 
   let x = 0;
   let y = 0;
-  let scale = 0.75;
+  let scale = 0;
 
   let mouseX = 0;
   let mouseY = 0;
@@ -115,8 +115,13 @@ export function App() {
     x = canvasRef.width / 2;
     y = canvasRef.height / 2;
 
-    const width = TILE_RADIUS * 1.75 * 6;
-    scale = Math.min(canvasRef.width / width, canvasRef.height / width);
+    const tileWidth = Math.sqrt(3) * TILE_RADIUS;
+    const tileHeight = 2 * TILE_RADIUS;
+
+    const width = tileWidth * 5;
+    const height = tileHeight * 5;
+
+    scale = Math.min(canvasRef.width / width, canvasRef.height / height);
 
     ctx = canvasRef.getContext("2d");
 

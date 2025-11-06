@@ -1,14 +1,13 @@
-import { listTileVertices } from "@/lib/map";
+import { normalizeVertex } from "@/lib/coords";
+import { DICE_ROLL_ITERATIONS } from "@/lib/config";
 import type {
   Building,
   Die,
   Result,
   PlayerColor,
   Tile,
-  Position,
   CardType,
 } from "@/lib/types";
-import { DICE_ROLL_ITERATIONS } from "@/lib/config";
 
 export function createRollSequence(): { firstDice: Die[]; secondDice: Die[] } {
   const firstDice: Die[] = [];
@@ -37,8 +36,8 @@ function randomDie() {
 
 export function collectResources(
   result: Result,
-  tiles: Tile[][],
-  buildings: (Building | null)[][],
+  tiles: Tile[],
+  buildings: Building[],
   playerColor: PlayerColor,
 ) {
   const resources: Record<CardType, number> = {
@@ -51,26 +50,18 @@ export function collectResources(
     development: 0,
   };
 
-  const matchingTiles: Position[] = [];
-  for (let row = 0; row < tiles.length; row++) {
-    for (let col = 0; col < tiles[row].length; col++) {
-      if (tiles[row][col].value === result) {
-        matchingTiles.push({ row, col });
-      }
-    }
-  }
-
+  const matchingTiles = tiles.filter((tile) => tile.value === result);
   for (const tile of matchingTiles) {
-    const vertices = listTileVertices(tile);
-    for (const vertex of vertices) {
-      const building = buildings[vertex.row][vertex.col];
+    for (let v = 0; v < 6; v++) {
+      let { q: nq, r: nr, v: nv } = normalizeVertex(tile.q, tile.r, v);
+      const building = buildings.find(
+        (building) =>
+          building.q === nq && building.r === nr && building.v === nv,
+      );
       if (building && building.color === playerColor) {
-        const resourceType = tiles[tile.row][tile.col].type;
-
-        const amount = building.type === "settlement" ? 1 : 2;
-
+        const resourceType = tile.type;
         if (resourceType !== "desert") {
-          resources[resourceType] += amount;
+          resources[resourceType] += 1;
         }
       }
     }
