@@ -11,6 +11,7 @@ import { Players } from "@/components/Players";
 import { Button } from "@/components/ui/Button";
 import { Panel } from "@/components/ui/Panel";
 
+import { connect } from "@/lib/socket";
 import { useState } from "@/lib/state";
 import {
   createRollSequence,
@@ -45,6 +46,8 @@ export function App() {
   let mouseY = 0;
 
   onMount(() => {
+    connect(setState);
+
     globalThis.addEventListener("resize", handleResize);
 
     if (canvasRef) {

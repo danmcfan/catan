@@ -10,10 +10,13 @@ export type CardType =
 export type TileType = "desert" | "lumber" | "brick" | "wool" | "grain" | "ore";
 
 export type Tile = {
-  q: number;
-  r: number;
-  type: TileType;
-  value: number;
+  cube: {
+    q: number;
+    r: number;
+    s: number;
+  };
+  resource: TileType;
+  number: number;
 };
 
 export type BuildingType = "settlement" | "city";

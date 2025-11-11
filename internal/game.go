@@ -6,18 +6,15 @@ type Game struct {
 	Board   *Board
 }
 
-func NewGame() Game {
-	return Game{
+func NewGame() *Game {
+	return &Game{
 		Players: []*Player{
 			NewPlayer("Alpha", ColorRed),
 			NewPlayer("Beta", ColorBlue),
 			NewPlayer("Gamma", ColorGreen),
 			NewPlayer("Delta", ColorYellow),
 		},
-		Dice: NewDice(),
+		Dice:  NewDice(),
+		Board: NewBoard(),
 	}
-}
-
-func (g *Game) DiceResult() int {
-	return g.Dice.First.Value + g.Dice.Second.Value
 }

@@ -1,15 +1,5 @@
 package internal
 
-type Resource string
-
-const (
-	ResourceLumber Resource = "lumber"
-	ResourceBrick  Resource = "brick"
-	ResourceWool   Resource = "wool"
-	ResourceGrain  Resource = "grain"
-	ResourceOre    Resource = "ore"
-)
-
 type Resources map[Resource]int
 
 func NewResources() Resources {

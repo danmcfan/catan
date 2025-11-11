@@ -32,7 +32,7 @@ export function render(
 function renderTiles(ctx: CanvasRenderingContext2D, state: State) {
   for (const tile of state.board.tiles) {
     let colorConfig = { top: "", bottom: "", border: "black" };
-    switch (tile.type) {
+    switch (tile.resource) {
       case "desert":
         colorConfig = COLORS.desert;
         break;
@@ -52,10 +52,10 @@ function renderTiles(ctx: CanvasRenderingContext2D, state: State) {
         colorConfig = COLORS.ore;
         break;
       default:
-        throw new Error(`unknown tile type: ${tile.type}`);
+        throw new Error(`unknown tile resource: ${tile.resource}`);
     }
 
-    const { x, y } = hexToPixel(tile.q, tile.r, TILE_RADIUS);
+    const { x, y } = hexToPixel(tile.cube.q, tile.cube.r, TILE_RADIUS);
 
     hexagon(
       ctx,
@@ -76,9 +76,9 @@ function renderTiles(ctx: CanvasRenderingContext2D, state: State) {
       colorConfig.border,
     );
 
-    if (tile.value > 0) {
+    if (tile.number > 0) {
       const result = state.dice.first + state.dice.second;
-      if (state.turn.darkenTiles && tile.value === result) {
+      if (state.turn.darkenTiles && tile.number === result) {
         hexagon(
           ctx,
           x,
@@ -92,7 +92,7 @@ function renderTiles(ctx: CanvasRenderingContext2D, state: State) {
       }
 
       let color = "black";
-      if (tile.value === 6 || tile.value === 8) {
+      if (tile.number === 6 || tile.number === 8) {
         color = "oklch(57.7% 0.245 27.325)";
       }
 
@@ -106,7 +106,7 @@ function renderTiles(ctx: CanvasRenderingContext2D, state: State) {
         color,
       );
 
-      text(ctx, x, y + 4, tile.value.toString(), color);
+      text(ctx, x, y + 4, tile.number.toString(), color);
     }
   }
 }

@@ -20,37 +20,6 @@ export type State = {
   };
 };
 
-const initialTiles: Tile[] = [
-  // Row 1 (3 tiles)
-  { q: 0, r: -2, type: "ore", value: 10 },
-  { q: 1, r: -2, type: "wool", value: 2 },
-  { q: 2, r: -2, type: "lumber", value: 9 },
-
-  // Row 2 (4 tiles)
-  { q: -1, r: -1, type: "grain", value: 12 },
-  { q: 0, r: -1, type: "brick", value: 6 },
-  { q: 1, r: -1, type: "wool", value: 4 },
-  { q: 2, r: -1, type: "brick", value: 10 },
-
-  // Row 3 (5 tiles)
-  { q: -2, r: 0, type: "grain", value: 9 },
-  { q: -1, r: 0, type: "lumber", value: 11 },
-  { q: 0, r: 0, type: "desert", value: 0 },
-  { q: 1, r: 0, type: "lumber", value: 3 },
-  { q: 2, r: 0, type: "ore", value: 8 },
-
-  // Row 4 (4 tiles)
-  { q: -2, r: 1, type: "lumber", value: 8 },
-  { q: -1, r: 1, type: "ore", value: 3 },
-  { q: 0, r: 1, type: "grain", value: 4 },
-  { q: 1, r: 1, type: "wool", value: 5 },
-
-  // Row 5 (3 tiles)
-  { q: -2, r: 2, type: "brick", value: 5 },
-  { q: -1, r: 2, type: "grain", value: 6 },
-  { q: 0, r: 2, type: "wool", value: 11 },
-];
-
 const initialBuildings: Building[] = [
   // Red settlements
   { q: -2, r: 1, v: 2, type: "settlement", color: "red" },
@@ -90,7 +59,7 @@ const initialState: State = {
     development: 0,
   },
   board: {
-    tiles: initialTiles,
+    tiles: [],
     buildings: initialBuildings,
   },
 };

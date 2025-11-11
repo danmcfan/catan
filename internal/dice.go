@@ -32,3 +32,7 @@ func (d *Dice) Roll() {
 	d.First.Roll()
 	d.Second.Roll()
 }
+
+func (d *Dice) Result() int {
+	return d.First.Value + d.Second.Value
+}
