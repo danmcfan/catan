@@ -15,7 +15,7 @@ const (
 	MaxS        = 2
 	MinNumber   = 2
 	MaxNumber   = 12
-	MaxAttempts = 10
+	MaxAttempts = 100
 )
 
 type Resource string
