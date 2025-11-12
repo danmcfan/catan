@@ -1,4 +1,4 @@
-import { createEffect, onMount, onCleanup, ErrorBoundary } from "solid-js";
+import { onMount, onCleanup, ErrorBoundary } from "solid-js";
 import { Hammer, FastForward, Settings } from "lucide-solid";
 
 import { Bank } from "@/components/Bank";
@@ -13,12 +13,7 @@ import { Panel } from "@/components/ui/Panel";
 
 import { connect } from "@/lib/socket";
 import { useState } from "@/lib/state";
-import {
-  createRollSequence,
-  collectResources,
-  mergeResources,
-  getNextId,
-} from "@/lib/engine";
+import { createRollSequence } from "@/lib/engine";
 import { render } from "@/lib/render";
 import {
   DICE_ROLL_ITERATIONS,
@@ -26,7 +21,6 @@ import {
   TIME_PER_FRAME,
   TILE_RADIUS,
 } from "@/lib/config";
-import type { Result } from "@/lib/types";
 
 export function App() {
   const [state, setState] = useState();
@@ -136,30 +130,6 @@ export function App() {
     mouseX = event.offsetX;
     mouseY = event.offsetY;
   }
-
-  createEffect(() => {
-    if (!state.dice.rolled) return;
-
-    const result = (state.dice.first + state.dice.second) as Result;
-    const collected = collectResources(
-      result,
-      state.board.tiles,
-      state.board.buildings,
-      "red",
-    );
-    setState("hand", (prev) => mergeResources(prev, collected));
-
-    const nextId = getNextId(state.turn.rollingPlayerId);
-    setState("turn", "rollingPlayerId", nextId.toString());
-    setState("dice", "rolled", false);
-
-    if (state.turn.rollingPlayerId === state.turn.activePlayerId) return;
-
-    const timeout = setTimeout(() => {
-      rollDice();
-      clearTimeout(timeout);
-    }, 2500);
-  });
 
   const enableHammer = () => {
     if (state.turn.rollingPlayerId !== state.turn.activePlayerId) return false;

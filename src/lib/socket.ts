@@ -4,7 +4,12 @@ import type { Tile } from "@/lib/types";
 import type { Building } from "@/lib/types";
 
 export function connect(setState: SetStoreFunction<State>) {
-  const socket = new WebSocket("ws://localhost:8080/ws");
+  const secured = window.location.protocol === "https:";
+  const url = secured
+    ? "wss://catan.dannyobrien.dev/ws"
+    : "ws://localhost:8080/ws";
+
+  const socket = new WebSocket(url);
 
   socket.onopen = () => {
     console.debug("Connected to server");
