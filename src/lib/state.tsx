@@ -20,24 +20,6 @@ export type State = {
   };
 };
 
-const initialBuildings: Building[] = [
-  // Red settlements
-  { q: -2, r: 1, v: 2, type: "settlement", color: "red" },
-  { q: 0, r: 1, v: 2, type: "settlement", color: "red" },
-
-  // Blue settlements
-  { q: 0, r: -2, v: 2, type: "settlement", color: "blue" },
-  { q: -1, r: -1, v: 3, type: "settlement", color: "blue" },
-
-  // Green settlements
-  { q: -1, r: 1, v: 2, type: "settlement", color: "green" },
-  { q: 2, r: -2, v: 3, type: "settlement", color: "green" },
-
-  // Yellow settlements
-  { q: 2, r: -1, v: 3, type: "settlement", color: "yellow" },
-  { q: 0, r: 0, v: 2, type: "settlement", color: "yellow" },
-];
-
 const initialState: State = {
   dice: {
     first: 1,
@@ -60,7 +42,7 @@ const initialState: State = {
   },
   board: {
     tiles: [],
-    buildings: initialBuildings,
+    buildings: [],
   },
 };
 

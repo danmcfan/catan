@@ -33,3 +33,22 @@ func BenchmarkPlaceTiles(b *testing.B) {
 		}
 	}
 }
+
+func TestListVertices(t *testing.T) {
+	board := NewBoard()
+	board.PlaceTiles()
+	vertices := ListVertices(board.Tiles)
+	if len(vertices) != 54 {
+		t.Errorf("expected 54 vertices, got %d", len(vertices))
+	}
+}
+
+func TestPlaceBuildings(t *testing.T) {
+	board := NewBoard()
+	board.PlaceTiles()
+	board.PlaceBuildings()
+
+	if len(board.Buildings) != 8 {
+		t.Errorf("expected 8 buildings, got %d", len(board.Buildings))
+	}
+}

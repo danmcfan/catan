@@ -11,14 +11,14 @@ import (
 
 var game *internal.Game
 
-func SendTiles(ws *websocket.Conn) {
-	data, err := game.Board.Tiles.Marshal()
+func SendBoard(ws *websocket.Conn) {
+	data, err := game.Board.Marshal()
 	if err != nil {
-		log.Printf("Error marshalling tiles: %s", err)
+		log.Printf("Error marshalling board: %s", err)
 		return
 	}
 
-	log.Printf("Sending tiles")
+	log.Printf("Sending board")
 	ws.Write(data)
 }
 
@@ -29,10 +29,13 @@ func HandleConnection(ws *websocket.Conn) {
 		ws.Close()
 	}()
 
+	SendBoard(ws)
+
 	for {
+		time.Sleep(5 * time.Second)
 		game.Board.PlaceTiles()
-		SendTiles(ws)
-		time.Sleep(1 * time.Second)
+		game.Board.PlaceBuildings()
+		SendBoard(ws)
 	}
 }
 
@@ -40,6 +43,7 @@ func main() {
 	game = internal.NewGame()
 	game.Dice.Roll()
 	game.Board.PlaceTiles()
+	game.Board.PlaceBuildings()
 
 	http.Handle("/ws", websocket.Handler(HandleConnection))
 

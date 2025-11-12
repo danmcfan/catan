@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/rand"
+	"slices"
 )
 
 const (
@@ -35,41 +36,166 @@ type Cube struct {
 	S int `json:"s"`
 }
 
-type Tile struct {
-	Cube     Cube     `json:"cube"`
-	Resource Resource `json:"resource"`
-	Number   int      `json:"number"`
-}
-
-func NewTile(q int, r int, resource Resource, number int) *Tile {
+func NewCube(q int, r int) Cube {
 	s := -q - r
 
 	assert(q >= MinQ && q <= MaxQ, fmt.Sprintf("q out of range: %d", q))
 	assert(r >= MinR && r <= MaxR, fmt.Sprintf("r out of range: %d", r))
 	assert(s >= MinS && s <= MaxS, fmt.Sprintf("s out of range: %d", s))
 
-	if resource == ResourceDesert {
-		assert(number == 0, fmt.Sprintf("number must be 0 for desert: %d", number))
-	} else {
-		assert(
-			number >= MinNumber && number <= MaxNumber,
-			fmt.Sprintf("number out of range: %d", number),
-		)
-		assert(number != 7, "number cannot be 7")
+	return Cube{Q: q, R: r, S: s}
+}
+
+type Vertex struct {
+	Cube  Cube `json:"cube"`
+	Index int  `json:"index"`
+}
+
+func NewVertex(c Cube, i int) Vertex {
+	assert(i >= 0 && i <= 5, fmt.Sprintf("index out of range: %d", i))
+
+	v := Vertex{
+		Cube:  c,
+		Index: i,
+	}
+	v.Normalize()
+
+	return v
+}
+
+func (v Vertex) OverlappingVertices() []Vertex {
+	vertexNeighbors := [6][2]struct{ dq, dr, i int }{
+		{{dq: 0, dr: -1, i: 2}, {dq: 1, dr: -1, i: 4}},
+		{{dq: 1, dr: -1, i: 3}, {dq: 1, dr: 0, i: 5}},
+		{{dq: 1, dr: 0, i: 4}, {dq: 0, dr: 1, i: 0}},
+		{{dq: 0, dr: 1, i: 5}, {dq: -1, dr: 1, i: 1}},
+		{{dq: -1, dr: 1, i: 0}, {dq: -1, dr: 0, i: 2}},
+		{{dq: -1, dr: 0, i: 1}, {dq: 0, dr: -1, i: 3}},
 	}
 
-	return &Tile{
-		Cube:     Cube{Q: q, R: r, S: s},
-		Resource: resource,
-		Number:   number,
+	overlappingVertices := make([]Vertex, 0)
+	for _, neighbor := range vertexNeighbors[v.Index] {
+		nq := v.Cube.Q + neighbor.dq
+		nr := v.Cube.R + neighbor.dr
+		ns := -nq - nr
+		ni := neighbor.i
+
+		if nq < MinQ || nq > MaxQ || nr < MinR || nr > MaxR || ns < MinS || ns > MaxS {
+			continue
+		}
+
+		overlappingVertices = append(overlappingVertices, Vertex{Cube: NewCube(nq, nr), Index: ni})
+	}
+
+	return overlappingVertices
+}
+
+func (v Vertex) NeighboringVertices() []Vertex {
+	vertexNeighbors := [6][3]struct{ dq, dr, i int }{
+		{{dq: 1, dr: -2, i: 3}, {dq: 0, dr: 0, i: 1}, {dq: -1, dr: 0, i: 1}},
+		{{dq: 1, dr: 0, i: 0}, {dq: 0, dr: 0, i: 2}, {dq: 0, dr: 0, i: 0}},
+		{{dq: 0, dr: 0, i: 1}, {dq: 0, dr: 0, i: 3}, {dq: 1, dr: 0, i: 3}},
+		{{dq: 0, dr: 0, i: 2}, {dq: -1, dr: 1, i: 2}, {dq: -1, dr: 0, i: 2}},
+		{{dq: 0, dr: 0, i: 5}, {dq: 0, dr: 0, i: 3}, {dq: -1, dr: 0, i: 3}},
+		{{dq: 0, dr: 0, i: 0}, {dq: 0, dr: 0, i: 4}, {dq: -1, dr: 0, i: 0}},
+	}
+
+	neighboringVertices := make([]Vertex, 0)
+	for _, neighbor := range vertexNeighbors[v.Index] {
+		nq := v.Cube.Q + neighbor.dq
+		nr := v.Cube.R + neighbor.dr
+		ns := -nq - nr
+		ni := neighbor.i
+
+		if nq < MinQ || nq > MaxQ || nr < MinR || nr > MaxR || ns < MinS || ns > MaxS {
+			continue
+		}
+
+		nv := NewVertex(NewCube(nq, nr), ni)
+		neighboringVertices = append(neighboringVertices, nv)
+	}
+
+	return neighboringVertices
+}
+
+func (v *Vertex) Normalize() {
+	for _, overlappingVertex := range v.OverlappingVertices() {
+		if overlappingVertex.Cube.Q < v.Cube.Q || (overlappingVertex.Cube.Q == v.Cube.Q && overlappingVertex.Cube.R < v.Cube.R) {
+			v.Cube = overlappingVertex.Cube
+			v.Index = overlappingVertex.Index
+		}
 	}
 }
 
-func (t *Tile) String() string {
+func (v *Vertex) NeighboringCubes() []Cube {
+	neighboringCubes := make([]Cube, 0)
+
+	neighboringCubes = append(neighboringCubes, v.Cube)
+	for _, overlappingVertex := range v.OverlappingVertices() {
+		neighboringCubes = append(neighboringCubes, overlappingVertex.Cube)
+	}
+
+	return neighboringCubes
+}
+
+func (v *Vertex) PositionValue(ts Tiles) int {
+	positionValue := 0
+	neighboringCubes := v.NeighboringCubes()
+	for _, t := range ts {
+		for _, neighboringCube := range neighboringCubes {
+			if neighboringCube.Q == t.Cube.Q && neighboringCube.R == t.Cube.R && neighboringCube.S == t.Cube.S {
+				positionValue += t.Value()
+				break
+			}
+		}
+	}
+
+	return positionValue
+}
+
+type Tile struct {
+	Cube     Cube     `json:"cube"`
+	Resource Resource `json:"resource"`
+	Number   int      `json:"number"`
+}
+
+func NewTile(c Cube, r Resource, n int) Tile {
+	if r == ResourceDesert {
+		assert(n == 0, fmt.Sprintf("number must be 0 for desert: %d", n))
+	} else {
+		assert(n >= MinNumber && n <= MaxNumber, fmt.Sprintf("number out of range: %d", n))
+		assert(n != 7, "number cannot be 7")
+	}
+
+	return Tile{
+		Cube:     c,
+		Resource: r,
+		Number:   n,
+	}
+}
+
+func (t Tile) Value() int {
+	switch t.Number {
+	case 2, 12:
+		return 1
+	case 3, 11:
+		return 2
+	case 4, 10:
+		return 3
+	case 5, 9:
+		return 4
+	case 6, 8:
+		return 5
+	default:
+		return 0
+	}
+}
+
+func (t Tile) String() string {
 	return fmt.Sprintf("Tile(%d, %d, %d, %s, %d)", t.Cube.Q, t.Cube.R, t.Cube.S, t.Resource, t.Number)
 }
 
-type Tiles []*Tile
+type Tiles []Tile
 
 func (t Tiles) Marshal() ([]byte, error) {
 	return json.Marshal(t)
@@ -85,7 +211,7 @@ func (t Tiles) Neighbors(cube Cube) Tiles {
 		{Q: 0, R: -1, S: 1},
 	}
 
-	neighbors := make([]*Tile, 0)
+	neighbors := make([]Tile, 0)
 	for _, nieghborVector := range neighborVectors {
 		neighborCube := Cube{Q: cube.Q + nieghborVector.Q, R: cube.R + nieghborVector.R, S: cube.S + nieghborVector.S}
 		for _, tile := range t {
@@ -98,14 +224,46 @@ func (t Tiles) Neighbors(cube Cube) Tiles {
 	return neighbors
 }
 
+type BuildingType string
+
+const (
+	BuildingSettlement BuildingType = "settlement"
+	BuildingCity       BuildingType = "city"
+)
+
+type Building struct {
+	Vertex Vertex       `json:"vertex"`
+	Type   BuildingType `json:"type"`
+	Color  Color        `json:"color"`
+}
+
+func NewBuilding(v Vertex, t BuildingType, c Color) Building {
+	return Building{
+		Vertex: v,
+		Type:   t,
+		Color:  c,
+	}
+}
+
+type Buildings []Building
+
+func (bs Buildings) Marshal() ([]byte, error) {
+	return json.Marshal(bs)
+}
+
 type Board struct {
-	Tiles Tiles
+	Tiles     Tiles     `json:"tiles"`
+	Buildings Buildings `json:"buildings"`
 }
 
 func NewBoard() *Board {
 	return &Board{
 		Tiles: make(Tiles, 0),
 	}
+}
+
+func (b Board) Marshal() ([]byte, error) {
+	return json.Marshal(b)
 }
 
 func (b *Board) PlaceTiles() {
@@ -183,10 +341,93 @@ func CreateTiles() (Tiles, error) {
 					resources = append(resources[:resourceIndex], resources[resourceIndex+1:]...)
 				}
 
-				tiles = append(tiles, NewTile(q, r, resource, number))
+				cube := NewCube(q, r)
+				tiles = append(tiles, NewTile(cube, resource, number))
 			}
 		}
 	}
 
 	return tiles, nil
+}
+
+func (b *Board) PlaceBuildings() {
+	vertexPositionValues := make(map[Vertex]int)
+	for _, tile := range b.Tiles {
+		for i := range 6 {
+			vertex := NewVertex(tile.Cube, i)
+			if _, ok := vertexPositionValues[vertex]; !ok {
+				for _, cube := range vertex.NeighboringCubes() {
+					for _, t := range b.Tiles {
+						if t.Cube.Q == cube.Q && t.Cube.R == cube.R && t.Cube.S == cube.S {
+							vertexPositionValues[vertex] += t.Value()
+							break
+						}
+					}
+				}
+			}
+		}
+	}
+
+	buildings := make(Buildings, 0)
+
+	for _, color := range []Color{ColorRed, ColorBlue, ColorGreen, ColorYellow, ColorYellow, ColorGreen, ColorBlue, ColorRed} {
+		maxVertex := MaxVertex(vertexPositionValues, buildings)
+		buildings = append(buildings, NewBuilding(maxVertex, BuildingSettlement, color))
+	}
+
+	b.Buildings = buildings
+}
+
+func ListVertices(ts Tiles) []Vertex {
+	vertexSet := make(map[Vertex]bool)
+	for _, tile := range ts {
+		for i := range 6 {
+			vertex := NewVertex(tile.Cube, i)
+			vertexSet[vertex] = true
+		}
+	}
+
+	vertices := make([]Vertex, 0)
+	for vertex := range vertexSet {
+		vertices = append(vertices, vertex)
+	}
+
+	return vertices
+}
+
+func MaxVertex(vpv map[Vertex]int, bs Buildings) Vertex {
+	vs := make([]Vertex, 0)
+	for _, b := range bs {
+		vs = append(vs, b.Vertex)
+	}
+
+	var maxVertex Vertex
+	var maxPositionValue int
+
+	for vertex, positionValue := range vpv {
+		if CheckMaxVertex(vertex, positionValue, maxPositionValue, vs) {
+			maxPositionValue = positionValue
+			maxVertex = vertex
+		}
+	}
+
+	return maxVertex
+}
+
+func CheckMaxVertex(v Vertex, pv int, mpv int, vs []Vertex) bool {
+	if slices.Contains(vs, v) {
+		return false
+	}
+
+	for _, neighboringVertex := range v.NeighboringVertices() {
+		if slices.Contains(vs, neighboringVertex) {
+			return false
+		}
+	}
+
+	if pv > mpv {
+		return true
+	}
+
+	return false
 }

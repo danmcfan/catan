@@ -106,7 +106,15 @@ function renderTiles(ctx: CanvasRenderingContext2D, state: State) {
         color,
       );
 
-      text(ctx, x, y + 4, tile.number.toString(), color);
+      text(ctx, x, y, tile.number.toString(), color);
+      text(
+        ctx,
+        x,
+        y + 22,
+        "•".repeat(TileValue(tile.number)),
+        color,
+        "bold 12px monospace",
+      );
     }
   }
 }
@@ -126,9 +134,9 @@ function renderBuildings(
 
   for (const building of state.board.buildings) {
     const { x, y } = vertexToPixel(
-      building.q,
-      building.r,
-      building.v,
+      building.vertex.cube.q,
+      building.vertex.cube.r,
+      building.vertex.index,
       TILE_RADIUS,
     );
 
@@ -159,5 +167,27 @@ function renderBuildings(
         hover ? "white" : "black",
       );
     }
+  }
+}
+
+function TileValue(number: number) {
+  switch (number) {
+    case 2:
+    case 12:
+      return 1;
+    case 3:
+    case 11:
+      return 2;
+    case 4:
+    case 10:
+      return 3;
+    case 5:
+    case 9:
+      return 4;
+    case 6:
+    case 8:
+      return 5;
+    default:
+      return 0;
   }
 }

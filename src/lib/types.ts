@@ -22,9 +22,14 @@ export type Tile = {
 export type BuildingType = "settlement" | "city";
 
 export type Building = {
-  q: number;
-  r: number;
-  v: number;
+  vertex: {
+    cube: {
+      q: number;
+      r: number;
+      s: number;
+    };
+    index: number;
+  };
   type: BuildingType;
   color: string;
 };
